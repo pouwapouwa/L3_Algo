@@ -55,77 +55,56 @@ void shuffle(int t[], int taille){
   }
 }
 
-double moyenne(int taille, int t[][taille]){
-  double resultat = 0;
-  for (int i =0; i<taille; ++i){
-    for (int j = 0; j<taille; ++j){
-      resultat+=t[i][j];
-    }
-  }
-  return resultat/(taille*taille);
-}
-
-void variance(int taille, int t[][taille], double var[], double moyenne){
+void F(int taille, int t[][taille], double F[], double e){
   for (int i =0; i<taille; i++){
     for (int j =0; j<taille; j++){
-      printf("%d // %d \n",t[i][j]-moyenne,((t[i][j]-moyenne)*(t[i][j]-moyenne)));
-      var[i]+=((t[i][j]-moyenne)*(t[i][j]-moyenne));
+      F[i]+=((t[i][j]-e)*(t[i][j]-e)/e);
     }
-    var[i]=var[i]/taille;
-    printf("la variance de %d est de %d\n",i,var[i]);
   }
 }
 
-#define taille 10
+//#define taille 10
 
-int main(){
+int main(int argc, char * argv[]){
+  assert(argv[1]!=NULL);
+
+  printf("On lance le test avec %d essais\n", atoi(argv[1]));
+
+  /* Initialisation pour le random */
   time_t t2;
   srand((unsigned) time(&t2));
-  // int taille = 10;
-  int g[taille][taille];
-  
+
+  /*Initialisation des variables */
+  int taille = 10; // Variable pour le nb d'elements dans le tableau 
+  int g[taille][taille];  
   int t[taille];
+  double F1[taille];
+  double e = (atoi(argv[1]))/10;
+
+  /* Initialisation des tableaux à 0 */
+  for (int i = 0; i<taille; i++){
+    for (int j = 0; j<taille; j++){
+      g[i][j]=0;}}
+
+  for (int i =0 ; i <taille; ++i){
+    F1[i]=0;}
+
+  /*Initialisation du tableau que l'on shuffle */
   for (int i = 0; i<taille; i++){
     t[i]=i;}
 
-  for (int i = 0; i<taille; i++){
-    for (int j = 0; j<taille; j++){
-      g[i][j]=0;}
-  }
-
-  /* print_tableau2(taille, g); */
-  /* printf("\n"); */
-  /* shuffle(t, taille); */
-  /* remplir_g(taille, g, t); */
-  /* print_tableau(t, taille); */
-  /* print_tableau2(taille, g); */
-  /* printf("\n"); */
-
-  for (int u = 0; u<500; ++u){
+  /* Shuffle du tableau (argv[1]) fois, puis remplissage du double tableau */
+  for (int u = 0; u<atoi(argv[1]); ++u){
     shuffle(t, taille);
     remplir_g(taille, g, t);
   }
 
   print_tableau2(taille, g);
 
-  double moy=moyenne(taille,g);
-  printf("\nLa moyenne est de %lf\n", moy);
-
-  double var[taille];
-
+  /*Calcul et affichage de la distributivité */
+  F(taille, g, F1, e); 
   for (int i =0 ; i <taille; ++i){
-    var[i]=0;
-  }
-  
-  variance(taille, g, var, moy);
-  for (int i =0 ; i <taille; ++i){
-    printf("\nLa variance de %d est de %d.\n",i, var[i]);
-  }
-
-  for (int i =0 ; i <taille; ++i){
-    printf("%d", var[i]);
-    double w = sqrt((double)var[i]);
-    printf("\nL'écart type de %d est de %lf.\n",i, w);
+    printf("\nLa distribution selon X² de %d est de %lf.\n",i, F1[i]);
   }
   
   return 0;
