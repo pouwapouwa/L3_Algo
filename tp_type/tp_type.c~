@@ -1,0 +1,10 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+typedef struct node_t * node;
+
+struct node_t{
+  int value;
+  int group;
+};
